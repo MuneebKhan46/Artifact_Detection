@@ -558,7 +558,7 @@ class_1_accuracies.append(class_1_precision)
 from sklearn.metrics import accuracy_score, precision_recall_fscore_support, log_loss
 
 weights = np.array(class_1_accuracies) / np.sum(class_1_accuracies)
-predictions = np.array([model.predict(X_test)[:, 1] for model in models])
+predictions = np.array([model.predict(test_patches)[:, 1] for model in models])
 weighted_predictions = np.tensordot(weights, predictions, axes=([0], [0]))
 predicted_classes = (weighted_predictions > 0.5).astype(int)
 
