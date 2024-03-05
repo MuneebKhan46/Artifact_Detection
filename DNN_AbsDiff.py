@@ -1,9 +1,3 @@
-#!/usr/bin/env python
-# coding: utf-8
-
-# In[ ]:
-
-
 import tensorflow as tf
 import numpy as np
 import os
@@ -29,27 +23,11 @@ from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay, classifica
 models = []
 class_1_accuracies = []
 
-
-
-
-# In[ ]:
-
-
 original_dir = '/Dataset/dataset_patch_raw_ver3/original'
 denoised_dir = '/Dataset/dataset_patch_raw_ver3/denoised'
 csv_path     = '/Dataset/patch_label_median.csv'
-
 result_file_path = "/Dataset/Results/Overall_results.csv"
 
-
-
-# In[ ]:
-
-
-
-
-
-# In[ ]:
 
 
 def extract_y_channel_from_yuv_with_patch_numbers(yuv_file_path: str, width: int, height: int):
@@ -80,10 +58,6 @@ def extract_y_channel_from_yuv_with_patch_numbers(yuv_file_path: str, width: int
             patch_number += 1
 
     return patches, patch_numbers
-
-
-
-# In[ ]:
 
 
 def load_data_from_csv(csv_path, original_dir, denoised_dir):
@@ -120,11 +94,6 @@ def load_data_from_csv(csv_path, original_dir, denoised_dir):
     return all_original_patches, all_denoised_patches, all_scores, denoised_image_names, all_patch_numbers
 
 
-
-
-# In[ ]:
-
-
 def calculate_difference(original, ghosting):
     return [np.abs(ghost.astype(np.int16) - orig.astype(np.int16)).astype(np.uint8) for orig, ghost in zip(original, ghosting)]
 
@@ -133,9 +102,6 @@ def prepare_data(data, labels):
     data = np.array(data).astype('float32') / 255.0
     lbl = np.array(labels)
     return data, lbl
-
-
-# In[ ]:
 
 
 def save_metric_details(model_name, technique, feature_name, test_acc, weighted_precision, weighted_recall, weighted_f1_score, test_loss, accuracy_0, accuracy_1, result_file_path):
@@ -175,13 +141,6 @@ def save_metric_details(model_name, technique, feature_name, test_acc, weighted_
     df_metrics.to_csv(result_file_path, index=False)
 
 
-
-
-
-
-# In[ ]:
-
-
 def create_dnn_model(input_shape=(224,224, 1)):
     model = Sequential([
         Flatten(input_shape=input_shape),
@@ -208,36 +167,19 @@ def create_dnn_model(input_shape=(224,224, 1)):
     return model
 
 
-# In[ ]:
-
-
 original_patches, denoised_patches, labels, denoised_image_names, all_patch_numbers = load_data_from_csv(csv_path, original_dir, denoised_dir)
 
 
-
-# In[ ]:
-
-
 diff_patches = calculate_difference(original_patches, denoised_patches)
-
 diff_patches_np, labels_np = prepare_data(diff_patches, labels)
-
-
-# In[ ]:
 
 
 combined = list(zip(diff_patches_np, labels_np, denoised_image_names, all_patch_numbers))
 combined = sklearn_shuffle(combined)
 
 
-# In[ ]:
-
-
 ghosting_artifacts = [item for item in combined if item[1] == 1]
 non_ghosting_artifacts = [item for item in combined if item[1] == 0]
-
-
-# In[ ]:
 
 
 num_ghosting_artifacts = 3502
@@ -248,9 +190,6 @@ num_test_non_ghosting = 502
 
 num_train_ghosting = num_ghosting_artifacts - num_test_ghosting
 num_train_non_ghosting = num_non_ghosting_artifacts - num_test_non_ghosting
-
-
-# In[ ]:
 
 
 train_ghosting = ghosting_artifacts[num_test_ghosting:]
@@ -264,116 +203,61 @@ train_dataset = train_ghosting + train_non_ghosting
 test_dataset = test_ghosting + test_non_ghosting
 
 
-# In[ ]:
-
-
 train_patches, train_labels, train_image_names, train_patch_numbers = zip(*train_dataset)
 test_patches, test_labels, test_image_names, test_patch_numbers = zip(*test_dataset)
-
-
-# In[ ]:
 
 
 train_patches = np.array(train_patches)
 train_labels = np.array(train_labels)
 
 
-# In[ ]:
-
-
 X_train, X_test, y_train, y_test = train_test_split(train_patches, train_labels, test_size=0.2, random_state=42)
-
 y_train = keras.utils.to_categorical(y_train, 2)
 y_test = keras.utils.to_categorical(y_test, 2)
 
 
 # # Without Class Weight
 
-# In[ ]:
-
-
 dnn_wcw_model = create_dnn_model()
-
 dnn_wcw_model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
 
 
-
-# In[ ]:
-
-
 wcw_model_checkpoint = ModelCheckpoint(filepath='/Dataset/Model/DNN_AbsDiff_wCW.h5', save_best_only=True, monitor='val_accuracy', mode='max', verbose=1 )
-
 wcw_history = dnn_wcw_model.fit(X_train, y_train, epochs=20, validation_data=(X_test, y_test), callbacks=[wcw_model_checkpoint])
-
-
-# In[ ]:
-
-
-
 
 
 # # With Class Weight
 
-# In[ ]:
-
-
 ng = 27442
 ga = 3000
- 
 
 total = ng + ga
-
-
 imbalance_ratio = ng / ga  
 
 weight_for_0 = (1 / ng) * (total / 2.0)
 weight_for_1 = (1 / ga) * (total / 2.0)
-
 class_weight = {0: weight_for_0, 1: weight_for_1}
 
 print('Weight for class 0 (Non-ghosting): {:.2f}'.format(weight_for_0))
 print('Weight for class 1 (Ghosting): {:.2f}'.format(weight_for_1))
 
-
-# In[ ]:
-
-
 dnn_cw_model = create_dnn_model()
 dnn_cw_model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
 
 
-
-# In[ ]:
-
-
 cw_model_checkpoint = ModelCheckpoint(filepath='/Dataset/Model/DNN_AbsDiff_CW.h5', save_best_only=True, monitor='val_accuracy', mode='max', verbose=1 )
-
 cw_history = dnn_cw_model.fit(X_train, y_train, epochs=20, class_weight=class_weight, validation_data=(X_test, y_test), callbacks=[cw_model_checkpoint])
 
 
-# In[ ]:
-
-
-
-
-
 # # With Balance Class Training
-
-# In[ ]:
 
 
 combined = list(zip(train_patches, train_labels, train_image_names, train_patch_numbers))
 combined = sklearn_shuffle(combined)
 
 
-# In[ ]:
-
-
 ghosting_artifacts = [item for item in combined if item[1] == 1]
 non_ghosting_artifacts = [item for item in combined if item[1] == 0]
-
-
-# In[ ]:
 
 
 num_ghosting_artifacts = 3000
@@ -382,35 +266,24 @@ num_train_val_ghosting = 2700
 num_train_val_non_ghosting = 2700
 
 
-# In[ ]:
-
-
 num_test_ghosting = num_ghosting_artifacts - num_train_val_ghosting
 num_test_non_ghosting = num_non_ghosting_artifacts - num_train_val_non_ghosting
 
 
-
 train_val_ghosting = ghosting_artifacts[:num_train_val_ghosting]
 test_ghosting = ghosting_artifacts[num_train_val_ghosting:]
-
 train_val_non_ghosting = non_ghosting_artifacts[:num_train_val_non_ghosting]
 test_non_ghosting = non_ghosting_artifacts[num_train_val_non_ghosting:]
 
 
 cb_train_dataset = train_val_ghosting + train_val_non_ghosting
 cb_test_dataset = test_ghosting + test_non_ghosting
-
-
 print(len(cb_train_dataset))
 print(len(cb_test_dataset))
 
 
-# In[ ]:
-
-
 cb_train_patches, cb_train_labels, cb_train_img_names, cb_train_patch_numbers = zip(*cb_train_dataset)
 cb_test_patches, cb_test_labels, cb_test_img_names, cb_test_patch_numbers = zip(*cb_test_dataset)
-
 cb_train_patches = np.array(cb_train_patches)
 cb_train_labels = np.array(cb_train_labels)
 cb_test_patches = np.array(cb_test_patches)
@@ -421,73 +294,38 @@ cb_train_labels = keras.utils.to_categorical(cb_train_labels, 2)
 cb_test_labels = keras.utils.to_categorical(cb_test_labels, 2)
 
 
-# In[ ]:
-
-
 dnn_cb_model = create_dnn_model()
 dnn_cb_model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
 
 
-
-# In[ ]:
-
-
 cb_model_checkpoint = ModelCheckpoint(filepath='/Dataset/Model/DNN_AbsDiff_CB.h5', save_best_only=True, monitor='val_accuracy', mode='max', verbose=1 )
-
 cb_history = dnn_cb_model.fit(cb_train_patches, cb_train_labels, epochs=20, class_weight=class_weight, validation_data=(cb_test_patches, cb_test_labels), callbacks=[cb_model_checkpoint])
 
 
-
-# In[ ]:
-
-
-
-
-
-# # Testing
-
-# In[ ]:
+## Testing
 
 
 test_patches = np.array(test_patches)
 test_labels = np.array(test_labels)
-
 test_labels = keras.utils.to_categorical(test_labels, 2)
 
 
-# ## Without Class Weight
-
-# In[ ]:
+## Without Class Weight
 
 
 test_loss, test_acc = dnn_wcw_model.evaluate(test_patches, test_labels)
 test_acc  = test_acc *100
-
-
-# In[ ]:
-
 
 predictions = dnn_wcw_model.predict(test_patches)
 predicted_labels = np.argmax(predictions, axis=1)
 true_labels = np.argmax(test_labels, axis=-1)
 
 
-
-# In[ ]:
-
-
 report = classification_report(true_labels, predicted_labels, output_dict=True, target_names=["Non-Ghosting Artifact", "Ghosting Artifact"])
 
-
-# In[ ]:
-
-
 misclass_wCW_csv_path = '/Dataset/CSV/DNN_AbsDiff_wCW_misclassified_patches.csv'
-
 misclassified_indexes = np.where(predicted_labels != true_labels)[0]
-
 misclassified_data = []
-
 
 for index in misclassified_indexes:
     denoised_image_name = test_image_names[index]
@@ -509,25 +347,11 @@ misclassified_df = pd.DataFrame(misclassified_data, columns=[
 
 misclassified_df.to_csv(misclass_wCW_csv_path, index=False)
 
-
-
-
-# In[ ]:
-
-
 conf_matrix = confusion_matrix(true_labels, predicted_labels)
-
-
-
-# In[ ]:
-
-
 TN = conf_matrix[0, 0]
 FP = conf_matrix[0, 1]
 FN = conf_matrix[1, 0]
 TP = conf_matrix[1, 1]
-
-
 
 total_class_0 = TN + FP
 total_class_1 = TP + FN
@@ -538,11 +362,8 @@ correctly_predicted_1 = TP
 accuracy_0 = (TN / total_class_0) * 100
 accuracy_1 = (TP / total_class_1) * 100
 
-
 precision_0 = TN / (TN + FN) if (TN + FN) > 0 else 0
 recall_0 = TN / (TN + FP) if (TN + FP) > 0 else 0
-
-
 precision_1 = TP / (TP + FP) if (TP + FP) > 0 else 0
 recall_1 = TP / (TP + FN) if (TP + FN) > 0 else 0
 
@@ -563,11 +384,7 @@ weighted_recall    = weighted_recall*100
 model_name = "DNN"
 feature_name = "Absolute Difference Map"
 technique = "Without Class Weight"
-
 save_metric_details(model_name, technique, feature_name, test_acc, weighted_precision, weighted_recall, weighted_f1_score, test_loss, accuracy_0, accuracy_1, result_file_path)
-
-
-# In[ ]:
 
 
 class_1_precision = report['Ghosting Artifact']['precision']
@@ -575,48 +392,21 @@ models.append(dnn_wcw_model)
 class_1_accuracies.append(class_1_precision)
 
 
-
-
-# In[ ]:
-
-
-
-
-
-# ## With Class Weight
-
-# In[ ]:
-
+## With Class Weight
 
 test_loss, test_acc = dnn_cw_model.evaluate(test_patches, test_labels)
 test_acc  = test_acc *100
-
-
-# In[ ]:
-
 
 predictions = dnn_cw_model.predict(test_patches)
 predicted_labels = np.argmax(predictions, axis=1)
 true_labels = np.argmax(test_labels, axis=-1)
 
-
-
-# In[ ]:
-
-
 report = classification_report(true_labels, predicted_labels, output_dict=True, target_names=["Non-Ghosting Artifact", "Ghosting Artifact"])
-
-
-# In[ ]:
-
 
 misclass_CW_csv_path  = '/Dataset/CSV/DNN_AbsDiff_CW_misclassified_patches.csv'    
 
 misclassified_indexes = np.where(predicted_labels != true_labels)[0]
-
 misclassified_data = []
-
-
 for index in misclassified_indexes:
     denoised_image_name = test_image_names[index]
     patch_number = test_patch_numbers[index]
@@ -637,25 +427,11 @@ misclassified_df = pd.DataFrame(misclassified_data, columns=[
 
 misclassified_df.to_csv(misclass_CW_csv_path, index=False)
 
-
-
-
-# In[ ]:
-
-
 conf_matrix = confusion_matrix(true_labels, predicted_labels)
-
-
-
-# In[ ]:
-
-
 TN = conf_matrix[0, 0]
 FP = conf_matrix[0, 1]
 FN = conf_matrix[1, 0]
 TP = conf_matrix[1, 1]
-
-
 
 total_class_0 = TN + FP
 total_class_1 = TP + FN
@@ -666,11 +442,8 @@ correctly_predicted_1 = TP
 accuracy_0 = (TN / total_class_0) * 100
 accuracy_1 = (TP / total_class_1) * 100
 
-
 precision_0 = TN / (TN + FN) if (TN + FN) > 0 else 0
 recall_0 = TN / (TN + FP) if (TN + FP) > 0 else 0
-
-
 precision_1 = TP / (TP + FP) if (TP + FP) > 0 else 0
 recall_1 = TP / (TP + FN) if (TP + FN) > 0 else 0
 
@@ -691,65 +464,27 @@ weighted_recall    = weighted_recall*100
 model_name = "DNN"
 feature_name = "Absolute Difference Map"
 technique = "Class Weight"
-
 save_metric_details(model_name, technique, feature_name, test_acc, weighted_precision, weighted_recall, weighted_f1_score, test_loss, accuracy_0, accuracy_1, result_file_path)
-
-
-# In[ ]:
 
 
 class_1_precision = report['Ghosting Artifact']['precision']
 models.append(dnn_cw_model)
 class_1_accuracies.append(class_1_precision)
 
-
-
-
-# In[ ]:
-
-
-
-
-
-# In[ ]:
-
-
-
-
-
-# ## With Class Balance
-
-# In[ ]:
-
+## With Class Balance
 
 test_loss, test_acc = dnn_cb_model.evaluate(test_patches, test_labels)
 test_acc  = test_acc *100
-
-
-# In[ ]:
-
 
 predictions = dnn_cb_model.predict(test_patches)
 predicted_labels = np.argmax(predictions, axis=1)
 true_labels = np.argmax(test_labels, axis=-1)
 
-
-
-# In[ ]:
-
-
 report = classification_report(true_labels, predicted_labels, output_dict=True, target_names=["Non-Ghosting Artifact", "Ghosting Artifact"])
 
-
-# In[ ]:
-
-
 misclass_CB_csv_path  = '/Dataset/CSV/DNN_AbsDiff_CB_misclassified_patches.csv'    
-
 misclassified_indexes = np.where(predicted_labels != true_labels)[0]
-
 misclassified_data = []
-
 
 for index in misclassified_indexes:
     denoised_image_name = test_image_names[index]
@@ -772,23 +507,11 @@ misclassified_df = pd.DataFrame(misclassified_data, columns=[
 misclassified_df.to_csv(misclass_CB_csv_path, index=False)
 
 
-
-
-# In[ ]:
-
-
 conf_matrix = confusion_matrix(true_labels, predicted_labels)
-
-
-
-# In[ ]:
-
-
 TN = conf_matrix[0, 0]
 FP = conf_matrix[0, 1]
 FN = conf_matrix[1, 0]
 TP = conf_matrix[1, 1]
-
 
 
 total_class_0 = TN + FP
@@ -800,11 +523,8 @@ correctly_predicted_1 = TP
 accuracy_0 = (TN / total_class_0) * 100
 accuracy_1 = (TP / total_class_1) * 100
 
-
 precision_0 = TN / (TN + FN) if (TN + FN) > 0 else 0
 recall_0 = TN / (TN + FP) if (TN + FP) > 0 else 0
-
-
 precision_1 = TP / (TP + FP) if (TP + FP) > 0 else 0
 recall_1 = TP / (TP + FN) if (TP + FN) > 0 else 0
 
@@ -825,11 +545,7 @@ weighted_recall    = weighted_recall*100
 model_name = "DNN"
 feature_name = "Absolute Difference Map"
 technique = "Class Balance"
-
 save_metric_details(model_name, technique, feature_name, test_acc, weighted_precision, weighted_recall, weighted_f1_score, test_loss, accuracy_0, accuracy_1, result_file_path)
-
-
-# In[ ]:
 
 
 class_1_precision = report['Ghosting Artifact']['precision']
@@ -837,25 +553,12 @@ models.append(dnn_cb_model)
 class_1_accuracies.append(class_1_precision)
 
 
-
-
-# In[ ]:
-
-
-
-
-
-# ## ENSEMBLE 
-
-# In[ ]:
-
+## ENSEMBLE 
 
 from sklearn.metrics import accuracy_score, precision_recall_fscore_support, log_loss
 
-
 weights = np.array(class_1_accuracies) / np.sum(class_1_accuracies)
 predictions = np.array([model.predict(X_test)[:, 1] for model in models])
-
 weighted_predictions = np.tensordot(weights, predictions, axes=([0], [0]))
 predicted_classes = (weighted_predictions > 0.5).astype(int)
 
@@ -865,7 +568,6 @@ weighted_precision, weighted_recall, weighted_f1_score, _ = precision_recall_fsc
 test_loss = log_loss(true_labels, weighted_predictions)
 
 conf_matrix = confusion_matrix(true_labels, predicted_classes)
-
 TN = conf_matrix[0, 0]
 FP = conf_matrix[0, 1]
 FN = conf_matrix[1, 0]
@@ -890,21 +592,3 @@ feature_name = "Absolute Difference Map"
 technique = "Ensemble"
 
 save_metric_details(model_name, technique, feature_name, test_acc, weighted_precision, weighted_recall, weighted_f1_score, test_loss, accuracy_0, accuracy_1, result_file_path)
-
-
-# In[ ]:
-
-
-
-
-
-# In[ ]:
-
-
-
-
-
-# In[ ]:
-
-
-
