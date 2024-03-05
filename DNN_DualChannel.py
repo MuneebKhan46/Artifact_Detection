@@ -85,13 +85,13 @@ def load_data_from_csv(csv_path, original_dir, denoised_dir):
         all_denoised_patches.extend(denoised_patches)
         
         dual_maps = [generate_absolute_dual_map(orig, ghost) for orig, ghost in zip(all_original_patches, all_denoised_patches)]
-        denoised_image_names.extend([row['image_name']] * len(denoised_patches))  
+        denoised_image_names.extend([row['original_image_name']] * len(denoised_patches))  
         
         all_patch_numbers.extend(denoised_patch_numbers) 
 
         scores = np.array([0 if float(score) == 0 else 1 for score in row['patch_score'].split(',')])
         if len(scores) != len(original_patches) or len(scores) != len(denoised_patches):
-            print(f"Error: Mismatch in number of patches and scores for {row['original_image_name    ']}")
+            print(f"Error: Mismatch in number of patches and scores for {row['original_image_name']}")
             continue
         all_scores.extend(scores)
 
