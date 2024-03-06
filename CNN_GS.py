@@ -45,7 +45,7 @@ activations = ['relu', 'elu']
 dropout_rates = [0.0, 0.25]
 optimizers = ['adam', 'sgd']
 
-X_train, X_test, y_train, y_test = load_data()
+X_train, X_test, y_train, y_test = train_test_split(train_patches, train_labels, test_size=0.2, random_state=42)
 
 # Simplified grid search
 for kernel_size in kernel_sizes:
