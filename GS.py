@@ -168,7 +168,7 @@ X_train, X_test, y_train, y_test = train_test_split(diff_patches_np, labels_np, 
 y_train = keras.utils.to_categorical(y_train, 2)
 y_test = keras.utils.to_categorical(y_test, 2)
 
-# Simplified grid search
+results=[]
 for kernel_size in kernel_sizes:
     for learning_rate in learning_rates:
         for epoch in epochs:
@@ -179,5 +179,12 @@ for kernel_size in kernel_sizes:
                         model.fit(X_train, y_train, epochs=epoch, validation_split=0.2, verbose=0)
                         _, accuracy = model.evaluate(X_test, y_test, verbose=2)
                         print(f"Accuracy: {accuracy:.4f} | Params: ks={kernel_size}, lr={learning_rate}, eppchs={epoch}, Activation={activation}, dr={dropout_rate}, opt={optimizer}")
+                        results.append([accuracy, kernel_size, learning_rate,  activation, dropout_rate, optimizer])
 
-# Note: Running this code as-is will take a significant amount of time due to the number of combinations.
+
+with open('/Dataset/model_performance.csv', mode='w', newline='') as file:
+    writer = csv.writer(file)
+    # Write the header
+    writer.writerow(['Accuracy', 'Kernel Size', 'Learning Rate', 'Activation', 'Dropout Rate', 'Optimizer'])
+    # Write the data rows
+    writer.writerows(results)
