@@ -213,10 +213,10 @@ train_labels = np.array(train_labels)
 X_train, X_test, y_train, y_test = train_test_split(train_patches, train_labels, test_size=0.2, random_state=42)
 y_train = keras.utils.to_categorical(y_train, 2)
 y_test = keras.utils.to_categorical(y_test, 2)
-opt = SGD(lr=0.01, momentum=0.9)
 
 
 ## Without Class Weight
+opt = SGD(lr=0.01, momentum=0.9, decay=0.01)
 cnn_wcw_model = create_cnn_model()
 cnn_wcw_model.compile(optimizer=opt, loss='categorical_crossentropy', metrics=['accuracy'])
 
@@ -240,6 +240,7 @@ class_weight = {0: weight_for_0, 1: weight_for_1}
 print('Weight for class 0 (Non-ghosting): {:.2f}'.format(weight_for_0))
 print('Weight for class 1 (Ghosting): {:.2f}'.format(weight_for_1))
 
+opt = SGD(lr=0.01, momentum=0.9, decay=0.01)
 cnn_cw_model = create_cnn_model()
 cnn_cw_model.compile(optimizer=opt, loss='categorical_crossentropy', metrics=['accuracy'])
 
@@ -293,6 +294,7 @@ cb_train_labels = keras.utils.to_categorical(cb_train_labels, 2)
 cb_test_labels = keras.utils.to_categorical(cb_test_labels, 2)
 
 
+opt = SGD(lr=0.01, momentum=0.9, decay=0.01)
 cnn_cb_model = create_cnn_model()
 cnn_cb_model.compile(optimizer=opt, loss='categorical_crossentropy', metrics=['accuracy'])
 
