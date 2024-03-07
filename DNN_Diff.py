@@ -241,7 +241,7 @@ class_weight = {0: weight_for_0, 1: weight_for_1}
 print('Weight for class 0 (Non-ghosting): {:.2f}'.format(weight_for_0))
 print('Weight for class 1 (Ghosting): {:.2f}'.format(weight_for_1))
 
-opt = SGD(learning_rate=0.01)
+opt = SGD(learning_rate=0.001)
 dnn_cw_model = create_dnn_model()
 dnn_cw_model.compile(optimizer=opt, loss='categorical_crossentropy', metrics=['accuracy'])
 
@@ -562,6 +562,33 @@ weights = np.array(class_1_accuracies) / np.sum(class_1_accuracies)
 predictions = np.array([model.predict(test_patches)[:, 1] for model in models])
 weighted_predictions = np.tensordot(weights, predictions, axes=([0], [0]))
 predicted_classes = (weighted_predictions > 0.5).astype(int)
+
+
+misclass_En_csv_path  = '/Dataset/CSV/DNN_Diff_Ensemble_misclassified_patches.csv'    
+
+misclassified_indexes = np.where(predicted_classes != true_labels)[0]
+misclassified_data = []
+
+for index in misclassified_indexes:
+    denoised_image_name = test_image_names[index]
+    patch_number = test_patch_numbers[index]
+    true_label = true_labels[index]
+    predicted_label = predicted_labels[index]
+    probability_non_ghosting = predictions[index, 0]
+    probability_ghosting = predictions[index, 1]
+    
+    misclassified_data.append([
+        denoised_image_name, patch_number, true_label, predicted_label,
+        probability_non_ghosting, probability_ghosting
+    ])
+
+misclassified_df = pd.DataFrame(misclassified_data, columns=[
+    'Denoised Image Name', 'Patch Number', 'True Label', 'Predicted Label', 
+    'Probability Non-Ghosting', 'Probability Ghosting'
+])
+
+misclassified_df.to_csv(misclass_En_csv_path, index=False)
+
 
 test_acc = accuracy_score(true_labels, predicted_classes)
 
