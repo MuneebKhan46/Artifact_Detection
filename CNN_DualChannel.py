@@ -14,6 +14,7 @@ from tensorflow.keras.utils import plot_model
 from keras.models import Sequential
 from keras.layers import Input, Conv2D, MaxPooling2D, Flatten, Dense, Dropout, BatchNormalization, concatenate
 from keras.callbacks import ModelCheckpoint, EarlyStopping
+from keras.optimizers import SGD
 
 from sklearn.model_selection import train_test_split
 from sklearn.utils import shuffle as sklearn_shuffle
@@ -150,24 +151,24 @@ def save_metric_details(model_name, technique, feature_name, test_acc, weighted_
 
 def create_cnn_model(input_shape=(224,224, 1)):
     model = Sequential()
-    model.add(Conv2D(32, kernel_size=(3,3), activation='relu', input_shape=input_shape))
-    model.add(Conv2D(32, kernel_size=(3,3), activation='relu'))
+    model.add(Conv2D(32, kernel_size=(3,3), activation='elu', input_shape=input_shape))
+    model.add(Conv2D(32, kernel_size=(3,3), activation='elu'))
 
     model.add(MaxPooling2D(pool_size=(3,3)))
     model.add(BatchNormalization())     
     model.add(Dropout(0.2))
 
-    model.add(Conv2D(64, kernel_size=(3,3), activation='relu'))
-    model.add(Conv2D(64, kernel_size=(3,3), activation='relu'))
+    model.add(Conv2D(64, kernel_size=(3,3), activation='elu'))
+    model.add(Conv2D(64, kernel_size=(3,3), activation='elu'))
 
-    model.add(Conv2D(128, kernel_size=(3,3), activation='relu'))
-    model.add(Conv2D(128, kernel_size=(3,3), activation='relu'))
+    model.add(Conv2D(128, kernel_size=(3,3), activation='elu'))
+    model.add(Conv2D(128, kernel_size=(3,3), activation='elu'))
 
     model.add(BatchNormalization())
     model.add(Dropout(0.35))
 
     model.add(Flatten())
-    model.add(Dense(128, activation='relu'))
+    model.add(Dense(128, activation='elu'))
 
     model.add(Dense(2, activation='softmax'))
     return model
@@ -222,9 +223,9 @@ y_test = keras.utils.to_categorical(y_test, 2)
 
 
 ## Without Class Weight
-
+opt = SGD(lr=0.01)
 cnn_wcw_model = create_cnn_model()
-cnn_wcw_model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
+cnn_wcw_model.compile(optimizer=opt, loss='categorical_crossentropy', metrics=['accuracy'])
 
 
 wcw_model_checkpoint = ModelCheckpoint(filepath='/Dataset/Model/CNN_DualChannel_wCW.h5', save_best_only=True, monitor='val_accuracy', mode='max', verbose=1 )
@@ -246,8 +247,9 @@ class_weight = {0: weight_for_0, 1: weight_for_1}
 print('Weight for class 0 (Non-ghosting): {:.2f}'.format(weight_for_0))
 print('Weight for class 1 (Ghosting): {:.2f}'.format(weight_for_1))
 
+opt = SGD(lr=0.01)
 cnn_cw_model = create_cnn_model()
-cnn_cw_model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
+cnn_cw_model.compile(optimizer=opt, loss='categorical_crossentropy', metrics=['accuracy'])
 
 
 cw_model_checkpoint = ModelCheckpoint(filepath='/Dataset/Model/CNN_DualChannel_CW.h5', save_best_only=True, monitor='val_accuracy', mode='max', verbose=1 )
@@ -298,9 +300,9 @@ cb_test_labels = np.array(cb_test_labels)
 cb_train_labels = keras.utils.to_categorical(cb_train_labels, 2)
 cb_test_labels = keras.utils.to_categorical(cb_test_labels, 2)
 
-
+opt = SGD(lr=0.01)
 cnn_cb_model = create_cnn_model()
-cnn_cb_model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
+cnn_cb_model.compile(optimizer=opt, loss='categorical_crossentropy', metrics=['accuracy'])
 
 
 cb_model_checkpoint = ModelCheckpoint(filepath='/Dataset/Model/CNN_DualChannel_CB.h5', save_best_only=True, monitor='val_accuracy', mode='max', verbose=1 )
@@ -597,3 +599,4 @@ feature_name = "Dual Channel Map"
 technique = "Ensemble"
 
 save_metric_details(model_name, technique, feature_name, test_acc, weighted_precision, weighted_recall, weighted_f1_score, test_loss, accuracy_0, accuracy_1, result_file_path)
+print(f"Accuracy: {test_acc:.4f} | precision: {weighted_precision:.4f}, Recall={weighted_recall:.4f}, F1-score={weighted_f1_score:.4f}, Loss={test_loss:.4f}, N.G.A Accuracy={accuracy_0:.4f}, G.A Accuracy={accuracy_1:.4f}")
