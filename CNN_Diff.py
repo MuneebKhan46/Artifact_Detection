@@ -143,24 +143,24 @@ def save_metric_details(model_name, technique, feature_name, test_acc, weighted_
 
 def create_cnn_model(input_shape=(224,224, 1)):
     model = Sequential()
-    model.add(Conv2D(32, kernel_size=(3,3), activation='relu', input_shape=input_shape))
-    model.add(Conv2D(32, kernel_size=(3,3), activation='relu'))
+    model.add(Conv2D(32, kernel_size=(3,3), activation='elu', input_shape=input_shape))
+    model.add(Conv2D(32, kernel_size=(3,3), activation='elu'))
 
     model.add(MaxPooling2D(pool_size=(3,3)))
     model.add(BatchNormalization())     
     model.add(Dropout(0.2))
 
-    model.add(Conv2D(64, kernel_size=(3,3), activation='relu'))
-    model.add(Conv2D(64, kernel_size=(3,3), activation='relu'))
+    model.add(Conv2D(64, kernel_size=(3,3), activation='elu'))
+    model.add(Conv2D(64, kernel_size=(3,3), activation='elu'))
 
-    model.add(Conv2D(128, kernel_size=(3,3), activation='relu'))
-    model.add(Conv2D(128, kernel_size=(3,3), activation='relu'))
+    model.add(Conv2D(128, kernel_size=(3,3), activation='elu'))
+    model.add(Conv2D(128, kernel_size=(3,3), activation='elu'))
 
     model.add(BatchNormalization())
     model.add(Dropout(0.35))
 
     model.add(Flatten())
-    model.add(Dense(128, activation='relu'))
+    model.add(Dense(128, activation='elu'))
 
     model.add(Dense(2, activation='softmax'))
     return model
@@ -590,5 +590,6 @@ model_name = "CNN"
 feature_name = "Difference Map"
 technique = "Ensemble"
 
-print(f"Accuracy: {test_acc:.4f} | precision: {weighted_precision:.4f}, Recall={weighted_recall:.4f}, F1-score={weighted_f1_score:.4f}, Loss={test_loss:.4f}, N.G.A Accuracy={accuracy_0:.4f}, G.A Accuracy={accuracy_1:.4f}")
+
 save_metric_details(model_name, technique, feature_name, test_acc, weighted_precision, weighted_recall, weighted_f1_score, test_loss, accuracy_0, accuracy_1, result_file_path)
+print(f"Accuracy: {test_acc:.4f} | precision: {weighted_precision:.4f}, Recall={weighted_recall:.4f}, F1-score={weighted_f1_score:.4f}, Loss={test_loss:.4f}, N.G.A Accuracy={accuracy_0:.4f}, G.A Accuracy={accuracy_1:.4f}")
