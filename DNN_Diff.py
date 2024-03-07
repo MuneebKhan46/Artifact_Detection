@@ -574,8 +574,8 @@ for index in misclassified_indexes:
     patch_number = test_patch_numbers[index]
     true_label = true_labels[index]
     predicted_label = predicted_labels[index]
-    probability_non_ghosting = predictions[index, 0]
-    probability_ghosting = predictions[index, 1]
+    # probability_non_ghosting = predictions[index, 0]
+    # probability_ghosting = predictions[index, 1]
     
     misclassified_data.append([
         denoised_image_name, patch_number, true_label, predicted_label,
@@ -583,9 +583,7 @@ for index in misclassified_indexes:
     ])
 
 misclassified_df = pd.DataFrame(misclassified_data, columns=[
-    'Denoised Image Name', 'Patch Number', 'True Label', 'Predicted Label', 
-    'Probability Non-Ghosting', 'Probability Ghosting'
-])
+    'Denoised Image Name', 'Patch Number', 'True Label', 'Predicted Label'])
 
 misclassified_df.to_csv(misclass_En_csv_path, index=False)
 
