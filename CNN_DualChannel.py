@@ -149,7 +149,7 @@ def save_metric_details(model_name, technique, feature_name, test_acc, weighted_
     df_metrics.to_csv(result_file_path, index=False)
 
 
-def create_cnn_model(input_shape=(224,224, 1)):
+def create_cnn_model(input_shape=(224,224, 2)):
     model = Sequential()
     model.add(Conv2D(32, kernel_size=(3,3), activation='elu', input_shape=input_shape))
     model.add(Conv2D(32, kernel_size=(3,3), activation='elu'))
