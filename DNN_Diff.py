@@ -217,7 +217,7 @@ y_test = keras.utils.to_categorical(y_test, 2)
 
 
 ## Without Class Weight
-opt = SGD(learning_rate=0.01)
+opt = SGD(learning_rate=0.001)
 dnn_wcw_model = create_dnn_model()
 dnn_wcw_model.compile(optimizer=opt, loss='categorical_crossentropy', metrics=['accuracy'])
 
@@ -294,7 +294,7 @@ cb_test_labels = np.array(cb_test_labels)
 cb_train_labels = keras.utils.to_categorical(cb_train_labels, 2)
 cb_test_labels = keras.utils.to_categorical(cb_test_labels, 2)
 
-opt = SGD(learning_rate=0.01)
+opt = SGD(learning_rate=0.001)
 dnn_cb_model = create_dnn_model()
 dnn_cb_model.compile(optimizer=opt, loss='categorical_crossentropy', metrics=['accuracy'])
 
