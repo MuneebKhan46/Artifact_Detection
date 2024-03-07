@@ -144,22 +144,22 @@ def save_metric_details(model_name, technique, feature_name, test_acc, weighted_
 def create_dnn_model(input_shape=(224,224, 1)):
     model = Sequential([
         Flatten(input_shape=input_shape),
-        Dense(512, activation='elu'),
-        Dense(512, activation='elu'),
+        Dense(512, activation='relu'),
+        Dense(512, activation='relu'),
         
-        Dense(256, activation='elu'),
-        Dense(256, activation='elu'),
-        Dense(256, activation='elu'),
+        Dense(256, activation='relu'),
+        Dense(256, activation='relu'),
+        Dense(256, activation='relu'),
         
-        Dense(128, activation='elu'),
-        Dense(128, activation='elu'),
-        Dense(128, activation='elu'),             
+        Dense(128, activation='relu'),
+        Dense(128, activation='relu'),
+        Dense(128, activation='relu'),             
         
-        Dense(64, activation='elu'),
-        Dense(64, activation='elu'),
+        Dense(64, activation='relu'),
+        Dense(64, activation='relu'),
         
-        Dense(32, activation='elu'),
-        Dense(32, activation='elu'),
+        Dense(32, activation='relu'),
+        Dense(32, activation='relu'),
         
         Dense(2, activation='softmax')
     ])
