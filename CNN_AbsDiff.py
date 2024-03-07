@@ -14,7 +14,7 @@ from tensorflow.keras.utils import plot_model
 from keras.models import Sequential
 from keras.layers import Input, Conv2D, MaxPooling2D, Flatten, Dense, Dropout, BatchNormalization, concatenate
 from keras.callbacks import ModelCheckpoint, EarlyStopping
-
+from keras.optimizers import SGD
 from sklearn.model_selection import train_test_split
 from sklearn.utils import shuffle as sklearn_shuffle
 from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay, classification_report, accuracy_score
@@ -143,24 +143,24 @@ def save_metric_details(model_name, technique, feature_name, test_acc, weighted_
 
 def create_cnn_model(input_shape=(224,224, 1)):
     model = Sequential()
-    model.add(Conv2D(32, kernel_size=(3,3), activation='relu', input_shape=input_shape))
-    model.add(Conv2D(32, kernel_size=(3,3), activation='relu'))
+    model.add(Conv2D(32, kernel_size=(3,3), activation='elu', input_shape=input_shape))
+    model.add(Conv2D(32, kernel_size=(3,3), activation='elu'))
 
     model.add(MaxPooling2D(pool_size=(3,3)))
     model.add(BatchNormalization())     
-    model.add(Dropout(0.2))
+    # model.add(Dropout(0.2))
 
-    model.add(Conv2D(64, kernel_size=(3,3), activation='relu'))
-    model.add(Conv2D(64, kernel_size=(3,3), activation='relu'))
+    model.add(Conv2D(64, kernel_size=(3,3), activation='elu'))
+    model.add(Conv2D(64, kernel_size=(3,3), activation='elu'))
 
-    model.add(Conv2D(128, kernel_size=(3,3), activation='relu'))
-    model.add(Conv2D(128, kernel_size=(3,3), activation='relu'))
+    model.add(Conv2D(128, kernel_size=(3,3), activation='elu'))
+    model.add(Conv2D(128, kernel_size=(3,3), activation='elu'))
 
     model.add(BatchNormalization())
-    model.add(Dropout(0.35))
+    # model.add(Dropout(0.35))
 
     model.add(Flatten())
-    model.add(Dense(128, activation='relu'))
+    model.add(Dense(128, activation='elu'))
 
     model.add(Dense(2, activation='softmax'))
     return model
@@ -213,12 +213,12 @@ train_labels = np.array(train_labels)
 X_train, X_test, y_train, y_test = train_test_split(train_patches, train_labels, test_size=0.2, random_state=42)
 y_train = keras.utils.to_categorical(y_train, 2)
 y_test = keras.utils.to_categorical(y_test, 2)
+opt = SGD(lr=0.01, momentum=0.9)
 
 
 ## Without Class Weight
-
 cnn_wcw_model = create_cnn_model()
-cnn_wcw_model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
+cnn_wcw_model.compile(optimizer=opt, loss='categorical_crossentropy', metrics=['accuracy'])
 
 
 wcw_model_checkpoint = ModelCheckpoint(filepath='/Dataset/Model/CNN_AbsDiff_wCW.h5', save_best_only=True, monitor='val_accuracy', mode='max', verbose=1 )
@@ -241,7 +241,7 @@ print('Weight for class 0 (Non-ghosting): {:.2f}'.format(weight_for_0))
 print('Weight for class 1 (Ghosting): {:.2f}'.format(weight_for_1))
 
 cnn_cw_model = create_cnn_model()
-cnn_cw_model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
+cnn_cw_model.compile(optimizer=opt, loss='categorical_crossentropy', metrics=['accuracy'])
 
 
 cw_model_checkpoint = ModelCheckpoint(filepath='/Dataset/Model/CNN_AbsDiff_CW.h5', save_best_only=True, monitor='val_accuracy', mode='max', verbose=1 )
@@ -294,7 +294,7 @@ cb_test_labels = keras.utils.to_categorical(cb_test_labels, 2)
 
 
 cnn_cb_model = create_cnn_model()
-cnn_cb_model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
+cnn_cb_model.compile(optimizer=opt, loss='categorical_crossentropy', metrics=['accuracy'])
 
 
 cb_model_checkpoint = ModelCheckpoint(filepath='/Dataset/Model/CNN_AbsDiff_CB.h5', save_best_only=True, monitor='val_accuracy', mode='max', verbose=1 )
@@ -590,4 +590,5 @@ model_name = "CNN"
 feature_name = "Absolute Difference Map"
 technique = "Ensemble"
 
+print(f"Accuracy: {test_acc:.4f} | precision: {weighted_precision:.4f}, Recall={weighted_recall:.4f}, F1-score={weighted_f1_score:.4f}, Loss={test_loss:.4f}, N.G.A Accuracy={accuracy_0:.4f}, G.A Accuracy={accuracy_1:.4f}")
 save_metric_details(model_name, technique, feature_name, test_acc, weighted_precision, weighted_recall, weighted_f1_score, test_loss, accuracy_0, accuracy_1, result_file_path)
