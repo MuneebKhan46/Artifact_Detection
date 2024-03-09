@@ -14,7 +14,7 @@ from tensorflow.keras.utils import plot_model
 from keras.models import Sequential
 from keras.layers import Input, Conv2D, MaxPooling2D, Flatten, Dense, Dropout, BatchNormalization, concatenate
 from keras.callbacks import ModelCheckpoint, EarlyStopping
-from keras.optimizers import SGD
+from keras.optimizers import Adam
 from sklearn.model_selection import train_test_split
 from sklearn.utils import shuffle as sklearn_shuffle
 from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay, classification_report, accuracy_score
@@ -217,7 +217,7 @@ y_test = keras.utils.to_categorical(y_test, 2)
 
 
 # # Without Class Weight
-opt = SGD(learning_rate=0.01)
+opt = Adam(learning_rate=0.0001)
 dnn_wcw_model = create_dnn_model()
 dnn_wcw_model.compile(optimizer=opt, loss='categorical_crossentropy', metrics=['accuracy'])
 
@@ -241,7 +241,7 @@ class_weight = {0: weight_for_0, 1: weight_for_1}
 print('Weight for class 0 (Non-ghosting): {:.2f}'.format(weight_for_0))
 print('Weight for class 1 (Ghosting): {:.2f}'.format(weight_for_1))
 
-opt = SGD(learning_rate=0.01)
+opt = Adam(learning_rate=0.0001)
 dnn_cw_model = create_dnn_model()
 dnn_cw_model.compile(optimizer=opt, loss='categorical_crossentropy', metrics=['accuracy'])
 
@@ -294,7 +294,7 @@ cb_test_labels = np.array(cb_test_labels)
 cb_train_labels = keras.utils.to_categorical(cb_train_labels, 2)
 cb_test_labels = keras.utils.to_categorical(cb_test_labels, 2)
 
-opt = SGD(learning_rate=0.01)
+opt = Adam(learning_rate=0.0001)
 dnn_cb_model = create_dnn_model()
 dnn_cb_model.compile(optimizer=opt, loss='categorical_crossentropy', metrics=['accuracy'])
 
