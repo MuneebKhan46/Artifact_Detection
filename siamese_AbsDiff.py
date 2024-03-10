@@ -388,29 +388,29 @@ weighted_precision = weighted_precision*100
 weighted_recall    = weighted_recall*100
 
 
-model_name = "DNN"
+model_name = "Siamese"
 feature_name = "Absolute Difference Map"
 technique = "Without Class Weight"
 save_metric_details(model_name, technique, feature_name, test_acc, weighted_precision, weighted_recall, weighted_f1_score, test_loss, accuracy_0, accuracy_1, result_file_path)
 
 
 class_1_precision = report['Ghosting Artifact']['precision']
-models.append(dnn_wcw_model)
+models.append(siam_wcw_model)
 class_1_accuracies.append(class_1_precision)
 
 
 ## With Class Weight
 
-test_loss, test_acc = dnn_cw_model.evaluate(test_patches, test_labels)
+test_loss, test_acc = siam_cw_model.evaluate(test_patches, test_labels)
 test_acc  = test_acc *100
 
-predictions = dnn_cw_model.predict(test_patches)
+predictions = siam_cw_model.predict(test_patches)
 predicted_labels = np.argmax(predictions, axis=1)
 true_labels = np.argmax(test_labels, axis=-1)
 
 report = classification_report(true_labels, predicted_labels, output_dict=True, target_names=["Non-Ghosting Artifact", "Ghosting Artifact"])
 
-misclass_CW_csv_path  = '/Dataset/CSV/DNN_AbsDiff_CW_misclassified_patches.csv'    
+misclass_CW_csv_path  = '/Dataset/CSV/Siamese_AbsDiff_CW_misclassified_patches.csv'    
 
 misclassified_indexes = np.where(predicted_labels != true_labels)[0]
 misclassified_data = []
@@ -475,21 +475,21 @@ save_metric_details(model_name, technique, feature_name, test_acc, weighted_prec
 
 
 class_1_precision = report['Ghosting Artifact']['precision']
-models.append(dnn_cw_model)
+models.append(siam_cw_model)
 class_1_accuracies.append(class_1_precision)
 
 ## With Class Balance
 
-test_loss, test_acc = dnn_cb_model.evaluate(test_patches, test_labels)
+test_loss, test_acc = siam_cb_model.evaluate(test_patches, test_labels)
 test_acc  = test_acc *100
 
-predictions = dnn_cb_model.predict(test_patches)
+predictions = siam_cb_model.predict(test_patches)
 predicted_labels = np.argmax(predictions, axis=1)
 true_labels = np.argmax(test_labels, axis=-1)
 
 report = classification_report(true_labels, predicted_labels, output_dict=True, target_names=["Non-Ghosting Artifact", "Ghosting Artifact"])
 
-misclass_CB_csv_path  = '/Dataset/CSV/DNN_AbsDiff_CB_misclassified_patches.csv'    
+misclass_CB_csv_path  = '/Dataset/CSV/Siamese_AbsDiff_CB_misclassified_patches.csv'    
 misclassified_indexes = np.where(predicted_labels != true_labels)[0]
 misclassified_data = []
 
@@ -549,14 +549,14 @@ weighted_precision = weighted_precision*100
 weighted_recall    = weighted_recall*100
 
 
-model_name = "DNN"
+model_name = "Siamese"
 feature_name = "Absolute Difference Map"
 technique = "Class Balance"
 save_metric_details(model_name, technique, feature_name, test_acc, weighted_precision, weighted_recall, weighted_f1_score, test_loss, accuracy_0, accuracy_1, result_file_path)
 
 
 class_1_precision = report['Ghosting Artifact']['precision']
-models.append(dnn_cb_model)
+models.append(siam_cb_model)
 class_1_accuracies.append(class_1_precision)
 
 
@@ -594,7 +594,7 @@ accuracy_0 = (TN / total_class_0) * 100
 accuracy_1 = (TP / total_class_1) * 100
 
 
-model_name = "DNN"
+model_name = "Siamese"
 feature_name = "Absolute Difference Map"
 technique = "Ensemble"
 
