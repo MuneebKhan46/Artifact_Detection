@@ -297,6 +297,9 @@ cb_train_labels = np.array(cb_train_labels)
 cb_test_patches = np.array(cb_test_patches)
 cb_test_labels = np.array(cb_test_labels)
 
+cb_train_patches = [cb_train_patches[:, 0], cb_train_patches[:, 1]]
+cb_test_patches = [cb_test_patches[:, 0], cb_test_patches[:, 1]]
+
 
 cb_train_labels = keras.utils.to_categorical(cb_train_labels, 2)
 cb_test_labels = keras.utils.to_categorical(cb_test_labels, 2)
@@ -304,6 +307,7 @@ cb_test_labels = keras.utils.to_categorical(cb_test_labels, 2)
 opt = Adam(learning_rate=0.0001)
 siam_cb_model = create_siamese_model()
 siam_cb_model.compile(optimizer=opt, loss='categorical_crossentropy', metrics=['accuracy'])
+
 
 
 cb_model_checkpoint = ModelCheckpoint(filepath='/Dataset/Model/Siamese_AbsDiff_CB.h5', save_best_only=True, monitor='val_accuracy', mode='max', verbose=1 )
@@ -315,6 +319,9 @@ cb_history = siam_cb_model.fit(cb_train_patches, cb_train_labels, epochs=20, cla
 
 test_patches = np.array(test_patches)
 test_labels = np.array(test_labels)
+
+test_patches = [test_patches[:, 0],  test_patches[:, 1]]
+
 test_labels = keras.utils.to_categorical(test_labels, 2)
 
 
