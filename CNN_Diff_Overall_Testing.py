@@ -24,9 +24,9 @@ from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay, classifica
 models = []
 class_1_accuracies = []
 
-original_dir = '/Muneeb/Google Project (updated)/Dataset/dataset_patch_raw_ver3/dataset_patch_raw_ver3/original'
-denoised_dir = '/Muneeb/Google Project (updated)/Dataset/dataset_patch_raw_ver3/dataset_patch_raw_ver3/denoised'
-csv_path     = '/Muneeb/Google Project (updated)/Dataset/dataset_patch_raw_ver3/patch_label_median.csv'
+original_dir = '/Dataset/dataset_patch_raw_ver3/original'
+denoised_dir = '/Dataset/dataset_patch_raw_ver3/denoised'
+csv_path     = '/Dataset/patch_label_median.csv'
 
 
 
