@@ -155,7 +155,7 @@ def create_siamese_model(input_shape=(224, 224, 1)):
     processed_a = base_network(input_a)
     processed_b = base_network(input_b)
         
-    diff = Lambda(lambda tensors:tensors[0] - tensors[1]))([processed_a, processed_b])
+    diff = Lambda(lambda tensors:tensors[0] - tensors[1])([processed_a, processed_b])
     predictions = Dense(2, activation='softmax')(diff)
         
     return Model(inputs=[input_a, input_b], outputs=predictions)
