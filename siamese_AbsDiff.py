@@ -7,7 +7,7 @@ import cv2
 import textwrap
 import pandas as pd
 
-
+import tensorflow.keras.backend as K
 from tensorflow import keras
 from tensorflow.keras.models import Model
 from tensorflow.keras.utils import plot_model
@@ -18,6 +18,7 @@ from keras.optimizers import Adam
 from sklearn.model_selection import train_test_split
 from sklearn.utils import shuffle as sklearn_shuffle
 from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay, classification_report, accuracy_score
+from tensorflow.keras.layers import Input, Conv2D, MaxPooling2D, Flatten, Dense, Lambda
 
 
 models = []
