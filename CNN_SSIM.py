@@ -20,7 +20,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.utils import shuffle as sklearn_shuffle
 from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay, classification_report, accuracy_score
 
-
+element_type = np.uint8
 models = []
 class_1_accuracies = []
 
