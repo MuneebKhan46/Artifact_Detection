@@ -257,60 +257,60 @@ cw_model_checkpoint = ModelCheckpoint(filepath='/Dataset/Model/Siamese_Diff_CW.h
 cw_history = siam_cw_model.fit(X_train, y_train, epochs=20, class_weight=class_weight, validation_data=(X_test, y_test), callbacks=[cw_model_checkpoint])
 
 
-# # With Balance Class Training
+## With Balance Class Training
 
-combined = list(zip(train_patches, train_labels, train_image_names, train_patch_numbers))
-combined = sklearn_shuffle(combined)
-
-
-ghosting_artifacts = [item for item in combined if item[1] == 1]
-non_ghosting_artifacts = [item for item in combined if item[1] == 0]
+# combined = list(zip(train_patches, train_labels, train_image_names, train_patch_numbers))
+# combined = sklearn_shuffle(combined)
 
 
-num_ghosting_artifacts = 3000
-num_non_ghosting_artifacts = 27442
-num_train_val_ghosting = 2700
-num_train_val_non_ghosting = 2700
+# ghosting_artifacts = [item for item in combined if item[1] == 1]
+# non_ghosting_artifacts = [item for item in combined if item[1] == 0]
 
 
-num_test_ghosting = num_ghosting_artifacts - num_train_val_ghosting
-num_test_non_ghosting = num_non_ghosting_artifacts - num_train_val_non_ghosting
+# num_ghosting_artifacts = 3000
+# num_non_ghosting_artifacts = 27442
+# num_train_val_ghosting = 2700
+# num_train_val_non_ghosting = 2700
 
 
-train_val_ghosting = ghosting_artifacts[:num_train_val_ghosting]
-test_ghosting = ghosting_artifacts[num_train_val_ghosting:]
-train_val_non_ghosting = non_ghosting_artifacts[:num_train_val_non_ghosting]
-test_non_ghosting = non_ghosting_artifacts[num_train_val_non_ghosting:]
+# num_test_ghosting = num_ghosting_artifacts - num_train_val_ghosting
+# num_test_non_ghosting = num_non_ghosting_artifacts - num_train_val_non_ghosting
 
 
-cb_train_dataset = train_val_ghosting + train_val_non_ghosting
-cb_test_dataset = test_ghosting + test_non_ghosting
-print(len(cb_train_dataset))
-print(len(cb_test_dataset))
+# train_val_ghosting = ghosting_artifacts[:num_train_val_ghosting]
+# test_ghosting = ghosting_artifacts[num_train_val_ghosting:]
+# train_val_non_ghosting = non_ghosting_artifacts[:num_train_val_non_ghosting]
+# test_non_ghosting = non_ghosting_artifacts[num_train_val_non_ghosting:]
 
 
-cb_train_patches, cb_train_labels, cb_train_img_names, cb_train_patch_numbers = zip(*cb_train_dataset)
-cb_test_patches, cb_test_labels, cb_test_img_names, cb_test_patch_numbers = zip(*cb_test_dataset)
-cb_train_patches = np.array(cb_train_patches)
-cb_train_labels = np.array(cb_train_labels)
-cb_test_patches = np.array(cb_test_patches)
-cb_test_labels = np.array(cb_test_labels)
-
-cb_train_patches = [cb_train_patches[:, 0], cb_train_patches[:, 1]]
-cb_test_patches = [cb_test_patches[:, 0], cb_test_patches[:, 1]]
+# cb_train_dataset = train_val_ghosting + train_val_non_ghosting
+# cb_test_dataset = test_ghosting + test_non_ghosting
+# print(len(cb_train_dataset))
+# print(len(cb_test_dataset))
 
 
-cb_train_labels = keras.utils.to_categorical(cb_train_labels, 2)
-cb_test_labels = keras.utils.to_categorical(cb_test_labels, 2)
+# cb_train_patches, cb_train_labels, cb_train_img_names, cb_train_patch_numbers = zip(*cb_train_dataset)
+# cb_test_patches, cb_test_labels, cb_test_img_names, cb_test_patch_numbers = zip(*cb_test_dataset)
+# cb_train_patches = np.array(cb_train_patches)
+# cb_train_labels = np.array(cb_train_labels)
+# cb_test_patches = np.array(cb_test_patches)
+# cb_test_labels = np.array(cb_test_labels)
 
-opt = Adam(learning_rate=0.0001)
-siam_cb_model = create_siamese_model()
-siam_cb_model.compile(optimizer=opt, loss='categorical_crossentropy', metrics=['accuracy'])
+# cb_train_patches = [cb_train_patches[:, 0], cb_train_patches[:, 1]]
+# cb_test_patches = [cb_test_patches[:, 0], cb_test_patches[:, 1]]
+
+
+# cb_train_labels = keras.utils.to_categorical(cb_train_labels, 2)
+# cb_test_labels = keras.utils.to_categorical(cb_test_labels, 2)
+
+# opt = Adam(learning_rate=0.0001)
+# siam_cb_model = create_siamese_model()
+# siam_cb_model.compile(optimizer=opt, loss='categorical_crossentropy', metrics=['accuracy'])
 
 
 
-cb_model_checkpoint = ModelCheckpoint(filepath='/Dataset/Model/Siamese_Diff_CB.h5', save_best_only=True, monitor='val_accuracy', mode='max', verbose=1 )
-cb_history = siam_cb_model.fit(cb_train_patches, cb_train_labels, epochs=20, class_weight=class_weight, validation_data=(cb_test_patches, cb_test_labels), callbacks=[cb_model_checkpoint])
+# cb_model_checkpoint = ModelCheckpoint(filepath='/Dataset/Model/Siamese_Diff_CB.h5', save_best_only=True, monitor='val_accuracy', mode='max', verbose=1 )
+# cb_history = siam_cb_model.fit(cb_train_patches, cb_train_labels, epochs=20, class_weight=class_weight, validation_data=(cb_test_patches, cb_test_labels), callbacks=[cb_model_checkpoint])
 
 
 ## Testing
@@ -488,84 +488,84 @@ class_1_accuracies.append(class_1_precision)
 
 ## With Class Balance
 
-test_loss, test_acc = siam_cb_model.evaluate(test_patches, test_labels)
-test_acc  = test_acc *100
+# test_loss, test_acc = siam_cb_model.evaluate(test_patches, test_labels)
+# test_acc  = test_acc *100
 
-predictions = siam_cb_model.predict(test_patches)
-predicted_labels = np.argmax(predictions, axis=1)
-true_labels = np.argmax(test_labels, axis=-1)
+# predictions = siam_cb_model.predict(test_patches)
+# predicted_labels = np.argmax(predictions, axis=1)
+# true_labels = np.argmax(test_labels, axis=-1)
 
-report = classification_report(true_labels, predicted_labels, output_dict=True, target_names=["Non-Ghosting Artifact", "Ghosting Artifact"])
+# report = classification_report(true_labels, predicted_labels, output_dict=True, target_names=["Non-Ghosting Artifact", "Ghosting Artifact"])
 
-misclass_CB_csv_path  = '/Dataset/CSV/Siamese_AbsDiff_CB_misclassified_patches.csv'    
-misclassified_indexes = np.where(predicted_labels != true_labels)[0]
-misclassified_data = []
+# misclass_CB_csv_path  = '/Dataset/CSV/Siamese_AbsDiff_CB_misclassified_patches.csv'    
+# misclassified_indexes = np.where(predicted_labels != true_labels)[0]
+# misclassified_data = []
 
-for index in misclassified_indexes:
-    denoised_image_name = test_image_names[index]
-    patch_number = test_patch_numbers[index]
-    true_label = true_labels[index]
-    predicted_label = predicted_labels[index]
-    probability_non_ghosting = predictions[index, 0]
-    probability_ghosting = predictions[index, 1]
+# for index in misclassified_indexes:
+#     denoised_image_name = test_image_names[index]
+#     patch_number = test_patch_numbers[index]
+#     true_label = true_labels[index]
+#     predicted_label = predicted_labels[index]
+#     probability_non_ghosting = predictions[index, 0]
+#     probability_ghosting = predictions[index, 1]
     
-    misclassified_data.append([
-        denoised_image_name, patch_number, true_label, predicted_label,
-        probability_non_ghosting, probability_ghosting
-    ])
+#     misclassified_data.append([
+#         denoised_image_name, patch_number, true_label, predicted_label,
+#         probability_non_ghosting, probability_ghosting
+#     ])
 
-misclassified_df = pd.DataFrame(misclassified_data, columns=[
-    'Denoised Image Name', 'Patch Number', 'True Label', 'Predicted Label', 
-    'Probability Non-Ghosting', 'Probability Ghosting'
-])
+# misclassified_df = pd.DataFrame(misclassified_data, columns=[
+#     'Denoised Image Name', 'Patch Number', 'True Label', 'Predicted Label', 
+#     'Probability Non-Ghosting', 'Probability Ghosting'
+# ])
 
-misclassified_df.to_csv(misclass_CB_csv_path, index=False)
-
-
-conf_matrix = confusion_matrix(true_labels, predicted_labels)
-TN = conf_matrix[0, 0]
-FP = conf_matrix[0, 1]
-FN = conf_matrix[1, 0]
-TP = conf_matrix[1, 1]
+# misclassified_df.to_csv(misclass_CB_csv_path, index=False)
 
 
-total_class_0 = TN + FP
-total_class_1 = TP + FN
-correctly_predicted_0 = TN
-correctly_predicted_1 = TP
+# conf_matrix = confusion_matrix(true_labels, predicted_labels)
+# TN = conf_matrix[0, 0]
+# FP = conf_matrix[0, 1]
+# FN = conf_matrix[1, 0]
+# TP = conf_matrix[1, 1]
 
 
-accuracy_0 = (TN / total_class_0) * 100
-accuracy_1 = (TP / total_class_1) * 100
-
-precision_0 = TN / (TN + FN) if (TN + FN) > 0 else 0
-recall_0 = TN / (TN + FP) if (TN + FP) > 0 else 0
-precision_1 = TP / (TP + FP) if (TP + FP) > 0 else 0
-recall_1 = TP / (TP + FN) if (TP + FN) > 0 else 0
+# total_class_0 = TN + FP
+# total_class_1 = TP + FN
+# correctly_predicted_0 = TN
+# correctly_predicted_1 = TP
 
 
-weighted_precision = (precision_0 * total_class_0 + precision_1 * total_class_1) / (total_class_0 + total_class_1)
-weighted_recall = (recall_0 * total_class_0 + recall_1 * total_class_1) / (total_class_0 + total_class_1)
+# accuracy_0 = (TN / total_class_0) * 100
+# accuracy_1 = (TP / total_class_1) * 100
 
-if weighted_precision + weighted_recall > 0:
-    weighted_f1_score = 2 * (weighted_precision * weighted_recall) / (weighted_precision + weighted_recall)
-else:
-    weighted_f1_score = 0
-
-weighted_f1_score  = weighted_f1_score*100
-weighted_precision = weighted_precision*100
-weighted_recall    = weighted_recall*100
+# precision_0 = TN / (TN + FN) if (TN + FN) > 0 else 0
+# recall_0 = TN / (TN + FP) if (TN + FP) > 0 else 0
+# precision_1 = TP / (TP + FP) if (TP + FP) > 0 else 0
+# recall_1 = TP / (TP + FN) if (TP + FN) > 0 else 0
 
 
-model_name = "Siamese"
-feature_name = "Difference Map"
-technique = "Class Balance"
-save_metric_details(model_name, technique, feature_name, test_acc, weighted_precision, weighted_recall, weighted_f1_score, test_loss, accuracy_0, accuracy_1, result_file_path)
+# weighted_precision = (precision_0 * total_class_0 + precision_1 * total_class_1) / (total_class_0 + total_class_1)
+# weighted_recall = (recall_0 * total_class_0 + recall_1 * total_class_1) / (total_class_0 + total_class_1)
+
+# if weighted_precision + weighted_recall > 0:
+#     weighted_f1_score = 2 * (weighted_precision * weighted_recall) / (weighted_precision + weighted_recall)
+# else:
+#     weighted_f1_score = 0
+
+# weighted_f1_score  = weighted_f1_score*100
+# weighted_precision = weighted_precision*100
+# weighted_recall    = weighted_recall*100
 
 
-class_1_precision = report['Ghosting Artifact']['precision']
-models.append(siam_cb_model)
-class_1_accuracies.append(class_1_precision)
+# model_name = "Siamese"
+# feature_name = "Difference Map"
+# technique = "Class Balance"
+# save_metric_details(model_name, technique, feature_name, test_acc, weighted_precision, weighted_recall, weighted_f1_score, test_loss, accuracy_0, accuracy_1, result_file_path)
+
+
+# class_1_precision = report['Ghosting Artifact']['precision']
+# models.append(siam_cb_model)
+# class_1_accuracies.append(class_1_precision)
 
 
 ## ENSEMBLE 
