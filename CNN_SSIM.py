@@ -6,7 +6,8 @@ import csv
 import cv2
 import textwrap
 import pandas as pd
-
+import skimage
+import sklearn
 
 from tensorflow import keras
 from tensorflow.keras.models import Model
