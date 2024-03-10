@@ -1,8 +1,3 @@
-#!/usr/bin/env python
-# coding: utf-8
-
-# In[1]:
-
 
 import tensorflow as tf
 import numpy as np
@@ -113,19 +108,11 @@ def prepare_data(data, labels):
     return data, lbl
 
 
-# In[3]:
-
 
 original_patches, denoised_patches, labels, denoised_image_names, all_patch_numbers = load_data_from_csv(csv_path, original_dir, denoised_dir)
-
-
 diff_patches = calculate_difference(original_patches, denoised_patches)
 diff_patches_np, labels_np = prepare_data(diff_patches, labels)
 
-
-# # Testing
-
-# In[4]:
 
 
 test_patches = np.array(diff_patches_np)
@@ -133,21 +120,16 @@ test_labels = np.array(labels_np)
 test_labels = keras.utils.to_categorical(test_labels, 2)
 
 
-# ## Without Class Weight
-
-# In[5]:
-
-
-dnn_wcw_model= tf.keras.models.load_model('/Dataset/Model/DNN_Diff_wCW.h5')
+cnn_wcw_model= tf.keras.models.load_model('/Dataset/Model/CNN_AbsDiff_wCW.h5')
 
 
 # In[6]:
 
 
-test_loss, test_acc = dnn_wcw_model.evaluate(test_patches, test_labels)
+test_loss, test_acc = cnn_wcw_model.evaluate(test_patches, test_labels)
 test_acc  = test_acc *100
 
-predictions = dnn_wcw_model.predict(test_patches)
+predictions = cnn_wcw_model.predict(test_patches)
 predicted_labels = np.argmax(predictions, axis=1)
 true_labels = np.argmax(test_labels, axis=-1)
 
@@ -155,57 +137,42 @@ true_labels = np.argmax(test_labels, axis=-1)
 report = classification_report(true_labels, predicted_labels, output_dict=True, target_names=["Non-Ghosting Artifact", "Ghosting Artifact"])
 
 class_1_precision = report['Ghosting Artifact']['precision']
-models.append(dnn_wcw_model)
+models.append(cnn_wcw_model)
 class_1_accuracies.append(class_1_precision)
 
 
 
 
 # ## With Class Weight
-# 
-# 
-
-# In[7]:
 
 
-dnn_cw_model= tf.keras.models.load_model('/Dataset/Model/DNN_Diff_CW.h5')
+cnn_cw_model= tf.keras.models.load_model('/Dataset/Model/CNN_Diff_CW.h5')
 
 
-# In[8]:
-
-
-test_loss, test_acc = dnn_cw_model.evaluate(test_patches, test_labels)
+test_loss, test_acc = cnn_cw_model.evaluate(test_patches, test_labels)
 test_acc  = test_acc *100
 
-predictions = dnn_cw_model.predict(test_patches)
+predictions = cnn_cw_model.predict(test_patches)
 predicted_labels = np.argmax(predictions, axis=1)
 true_labels = np.argmax(test_labels, axis=-1)
 
 report = classification_report(true_labels, predicted_labels, output_dict=True, target_names=["Non-Ghosting Artifact", "Ghosting Artifact"])
 
 class_1_precision = report['Ghosting Artifact']['precision']
-models.append(dnn_cw_model)
+models.append(cnn_cw_model)
 class_1_accuracies.append(class_1_precision)
 
 
 
 # ## With Class Balance
-# 
-# 
 
-# In[9]:
+cnn_cb_model= tf.keras.models.load_model('/Dataset/Model/CNN_Diff_CB.h5')
 
 
-dnn_cb_model= tf.keras.models.load_model('/Dataset/Model/DNN_Diff_CB.h5')
-
-
-# In[10]:
-
-
-test_loss, test_acc = dnn_cb_model.evaluate(test_patches, test_labels)
+test_loss, test_acc = cnn_cb_model.evaluate(test_patches, test_labels)
 test_acc  = test_acc *100
 
-predictions = dnn_cb_model.predict(test_patches)
+predictions = cnn_cb_model.predict(test_patches)
 predicted_labels = np.argmax(predictions, axis=1)
 true_labels = np.argmax(test_labels, axis=-1)
 
@@ -213,7 +180,7 @@ report = classification_report(true_labels, predicted_labels, output_dict=True, 
 
 
 class_1_precision = report['Ghosting Artifact']['precision']
-models.append(dnn_cb_model)
+models.append(cnn_cb_model)
 class_1_accuracies.append(class_1_precision)
 
 
@@ -264,7 +231,7 @@ accuracy_0 = (TN / total_class_0) * 100
 accuracy_1 = (TP / total_class_1) * 100
 
 
-model_name = "DNN"
+model_name = "CNN"
 feature_name = "Difference Map"
 technique = "Ensemble"
 
@@ -277,17 +244,8 @@ technique = "Ensemble"
 print(f"Accuracy: {test_acc:.4f} | precision: {weighted_precision:.4f}, Recall={weighted_recall:.4f}, F1-score={weighted_f1_score:.4f}, Loss={test_loss:.4f}, N.G.A Accuracy={accuracy_0:.4f}, G.A Accuracy={accuracy_1:.4f}")
 
 
-# In[ ]:
 
-
-# a=pd.read_csv(result_file_path)
-# a
-
-
-# In[ ]:
-
-
-misclass_En_csv_path = '/Dataset/CSV/Overall Testing_DNN_Diff_misclassified_patches.csv'
+misclass_En_csv_path = '/Dataset/CSV/Overall Testing_CNN_Diff_misclassified_patches.csv'
 
 misclassified_data = []
 
@@ -310,10 +268,3 @@ misclassified_df = pd.DataFrame(misclassified_data, columns=[
     'Probability Non-Ghosting', 'Probability Ghosting'
 ])
 misclassified_df.to_csv(misclass_En_csv_path, index=False)
-
-
-# In[ ]:
-
-
-
-
