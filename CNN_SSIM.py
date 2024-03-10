@@ -95,9 +95,9 @@ def load_data_from_csv(csv_path, original_dir, denoised_dir):
     return all_original_patches, all_denoised_patches, all_scores, denoised_image_names, all_patch_numbers
 
 
-def calculate_ssim(original_patch_list, denoised_patch_list):
+def calculate_ssim(original_patches, denoised_patches):
     ssim = []
-    for original_patch, denoised_patch in zip(original_patch_list, denoised_patch_list):
+    for original_patch, denoised_patch in zip(original_patches, denoised_patches):
         score, diff = skimage.metrics.structural_similarity(original_patch.astype(element_type), denoised_patch.astype(element_type), win_size = 7, full = True)
         ssim = ssim + [diff]
     return ssim
