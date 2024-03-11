@@ -324,169 +324,6 @@ test_patches = [test_patches[:, 0],  test_patches[:, 1]]
 
 test_labels = keras.utils.to_categorical(test_labels, 2)
 
-
-## Without Class Weight
-
-
-# test_loss, test_acc = siam_wcw_model.evaluate(test_patches, test_labels)
-# test_acc  = test_acc *100
-
-# predictions = siam_wcw_model.predict(test_patches)
-# predicted_labels = np.argmax(predictions, axis=1)
-# true_labels = np.argmax(test_labels, axis=-1)
-
-
-# report = classification_report(true_labels, predicted_labels, output_dict=True, target_names=["Non-Ghosting Artifact", "Ghosting Artifact"])
-
-# misclass_wCW_csv_path = '/Dataset/CSV/Siamese_AbsDiff_wCW_misclassified_patches.csv'
-# misclassified_indexes = np.where(predicted_labels != true_labels)[0]
-# misclassified_data = []
-
-# for index in misclassified_indexes:
-#     denoised_image_name = test_image_names[index]
-#     patch_number = test_patch_numbers[index]
-#     true_label = true_labels[index]
-#     predicted_label = predicted_labels[index]
-#     probability_non_ghosting = predictions[index, 0]
-#     probability_ghosting = predictions[index, 1]
-    
-#     misclassified_data.append([
-#         denoised_image_name, patch_number, true_label, predicted_label,
-#         probability_non_ghosting, probability_ghosting
-#     ])
-
-# misclassified_df = pd.DataFrame(misclassified_data, columns=[
-#     'Denoised Image Name', 'Patch Number', 'True Label', 'Predicted Label', 
-#     'Probability Non-Ghosting', 'Probability Ghosting'
-# ])
-
-# misclassified_df.to_csv(misclass_wCW_csv_path, index=False)
-
-# conf_matrix = confusion_matrix(true_labels, predicted_labels)
-# TN = conf_matrix[0, 0]
-# FP = conf_matrix[0, 1]
-# FN = conf_matrix[1, 0]
-# TP = conf_matrix[1, 1]
-
-# total_class_0 = TN + FP
-# total_class_1 = TP + FN
-# correctly_predicted_0 = TN
-# correctly_predicted_1 = TP
-
-
-# accuracy_0 = (TN / total_class_0) * 100
-# accuracy_1 = (TP / total_class_1) * 100
-
-# precision_0 = TN / (TN + FN) if (TN + FN) > 0 else 0
-# recall_0 = TN / (TN + FP) if (TN + FP) > 0 else 0
-# precision_1 = TP / (TP + FP) if (TP + FP) > 0 else 0
-# recall_1 = TP / (TP + FN) if (TP + FN) > 0 else 0
-
-
-# weighted_precision = (precision_0 * total_class_0 + precision_1 * total_class_1) / (total_class_0 + total_class_1)
-# weighted_recall = (recall_0 * total_class_0 + recall_1 * total_class_1) / (total_class_0 + total_class_1)
-
-# if weighted_precision + weighted_recall > 0:
-#     weighted_f1_score = 2 * (weighted_precision * weighted_recall) / (weighted_precision + weighted_recall)
-# else:
-#     weighted_f1_score = 0
-
-# weighted_f1_score  = weighted_f1_score*100
-# weighted_precision = weighted_precision*100
-# weighted_recall    = weighted_recall*100
-
-
-# model_name = "Siamese"
-# feature_name = "Absolute Difference Map"
-# technique = "Without Class Weight"
-# save_metric_details(model_name, technique, feature_name, test_acc, weighted_precision, weighted_recall, weighted_f1_score, test_loss, accuracy_0, accuracy_1, result_file_path)
-
-
-# class_1_precision = report['Ghosting Artifact']['precision']
-# models.append(siam_wcw_model)
-# class_1_accuracies.append(class_1_precision)
-
-
-## With Class Weight
-
-# test_loss, test_acc = siam_cw_model.evaluate(test_patches, test_labels)
-# test_acc  = test_acc *100
-
-# predictions = siam_cw_model.predict(test_patches)
-# predicted_labels = np.argmax(predictions, axis=1)
-# true_labels = np.argmax(test_labels, axis=-1)
-
-# report = classification_report(true_labels, predicted_labels, output_dict=True, target_names=["Non-Ghosting Artifact", "Ghosting Artifact"])
-
-# misclass_CW_csv_path  = '/Dataset/CSV/Siamese_AbsDiff_CW_misclassified_patches.csv'    
-
-# misclassified_indexes = np.where(predicted_labels != true_labels)[0]
-# misclassified_data = []
-# for index in misclassified_indexes:
-#     denoised_image_name = test_image_names[index]
-#     patch_number = test_patch_numbers[index]
-#     true_label = true_labels[index]
-#     predicted_label = predicted_labels[index]
-#     probability_non_ghosting = predictions[index, 0]
-#     probability_ghosting = predictions[index, 1]
-    
-#     misclassified_data.append([
-#         denoised_image_name, patch_number, true_label, predicted_label,
-#         probability_non_ghosting, probability_ghosting
-#     ])
-
-# misclassified_df = pd.DataFrame(misclassified_data, columns=[
-#     'Denoised Image Name', 'Patch Number', 'True Label', 'Predicted Label', 
-#     'Probability Non-Ghosting', 'Probability Ghosting'
-# ])
-
-# misclassified_df.to_csv(misclass_CW_csv_path, index=False)
-
-# conf_matrix = confusion_matrix(true_labels, predicted_labels)
-# TN = conf_matrix[0, 0]
-# FP = conf_matrix[0, 1]
-# FN = conf_matrix[1, 0]
-# TP = conf_matrix[1, 1]
-
-# total_class_0 = TN + FP
-# total_class_1 = TP + FN
-# correctly_predicted_0 = TN
-# correctly_predicted_1 = TP
-
-
-# accuracy_0 = (TN / total_class_0) * 100
-# accuracy_1 = (TP / total_class_1) * 100
-
-# precision_0 = TN / (TN + FN) if (TN + FN) > 0 else 0
-# recall_0 = TN / (TN + FP) if (TN + FP) > 0 else 0
-# precision_1 = TP / (TP + FP) if (TP + FP) > 0 else 0
-# recall_1 = TP / (TP + FN) if (TP + FN) > 0 else 0
-
-
-# weighted_precision = (precision_0 * total_class_0 + precision_1 * total_class_1) / (total_class_0 + total_class_1)
-# weighted_recall = (recall_0 * total_class_0 + recall_1 * total_class_1) / (total_class_0 + total_class_1)
-
-# if weighted_precision + weighted_recall > 0:
-#     weighted_f1_score = 2 * (weighted_precision * weighted_recall) / (weighted_precision + weighted_recall)
-# else:
-#     weighted_f1_score = 0
-
-# weighted_f1_score  = weighted_f1_score*100
-# weighted_precision = weighted_precision*100
-# weighted_recall    = weighted_recall*100
-
-
-# model_name = "Siamese"
-# feature_name = "Absolute Difference Map"
-# technique = "Class Weight"
-# save_metric_details(model_name, technique, feature_name, test_acc, weighted_precision, weighted_recall, weighted_f1_score, test_loss, accuracy_0, accuracy_1, result_file_path)
-
-
-# class_1_precision = report['Ghosting Artifact']['precision']
-# models.append(siam_cw_model)
-# class_1_accuracies.append(class_1_precision)
-
-
 ## With Class Balance
 
 test_loss, test_acc = siam_cb_model.evaluate(test_patches, test_labels)
@@ -569,43 +406,91 @@ models.append(siam_cb_model)
 class_1_accuracies.append(class_1_precision)
 
 
+
+
+
+
+#############################################################################################################
+cnn_wcw_model= tf.keras.models.load_model('/Dataset/Model/Siamese_AbsDiff_wCW.h5')
+
+
+# In[6]:
+
+
+test_loss, test_acc = cnn_wcw_model.evaluate(test_patches, test_labels)
+test_acc  = test_acc *100
+
+predictions = cnn_wcw_model.predict(test_patches)
+predicted_labels = np.argmax(predictions, axis=1)
+true_labels = np.argmax(test_labels, axis=-1)
+
+
+report = classification_report(true_labels, predicted_labels, output_dict=True, target_names=["Non-Ghosting Artifact", "Ghosting Artifact"])
+
+class_1_precision = report['Ghosting Artifact']['precision']
+models.append(cnn_wcw_model)
+class_1_accuracies.append(class_1_precision)
+
+
+## With Class Weight
+
+
+cnn_cw_model= tf.keras.models.load_model('/Dataset/Model/Siamese_AbsDiff_CW.h5')
+
+
+test_loss, test_acc = cnn_cw_model.evaluate(test_patches, test_labels)
+test_acc  = test_acc *100
+
+predictions = cnn_cw_model.predict(test_patches)
+predicted_labels = np.argmax(predictions, axis=1)
+true_labels = np.argmax(test_labels, axis=-1)
+
+report = classification_report(true_labels, predicted_labels, output_dict=True, target_names=["Non-Ghosting Artifact", "Ghosting Artifact"])
+
+class_1_precision = report['Ghosting Artifact']['precision']
+models.append(cnn_cw_model)
+class_1_accuracies.append(class_1_precision)
+
+#############################################################################################################
+
+
 ## ENSEMBLE 
 
-# from sklearn.metrics import accuracy_score, precision_recall_fscore_support, log_loss
+from sklearn.metrics import accuracy_score, precision_recall_fscore_support, log_loss
 
-# weights = np.array(class_1_accuracies) / np.sum(class_1_accuracies)
-# predictions = np.array([model.predict(test_patches)[:, 1] for model in models])
-# weighted_predictions = np.tensordot(weights, predictions, axes=([0], [0]))
-# predicted_classes = (weighted_predictions > 0.5).astype(int)
+weights = np.array(class_1_accuracies) / np.sum(class_1_accuracies)
+predictions = np.array([model.predict(test_patches)[:, 1] for model in models])
+weighted_predictions = np.tensordot(weights, predictions, axes=([0], [0]))
+predicted_classes = (weighted_predictions > 0.5).astype(int)
 
-# test_acc = accuracy_score(true_labels, predicted_classes)
+test_acc = accuracy_score(true_labels, predicted_classes)
 
-# weighted_precision, weighted_recall, weighted_f1_score, _ = precision_recall_fscore_support(true_labels, predicted_classes, average='weighted')
-# test_loss = log_loss(true_labels, weighted_predictions)
+weighted_precision, weighted_recall, weighted_f1_score, _ = precision_recall_fscore_support(true_labels, predicted_classes, average='weighted')
+test_loss = log_loss(true_labels, weighted_predictions)
 
-# conf_matrix = confusion_matrix(true_labels, predicted_classes)
-# TN = conf_matrix[0, 0]
-# FP = conf_matrix[0, 1]
-# FN = conf_matrix[1, 0]
-# TP = conf_matrix[1, 1]
+conf_matrix = confusion_matrix(true_labels, predicted_classes)
+TN = conf_matrix[0, 0]
+FP = conf_matrix[0, 1]
+FN = conf_matrix[1, 0]
+TP = conf_matrix[1, 1]
 
-# total_class_0 = TN + FN  
-# total_class_1 = TP + FP  
-# correctly_predicted_0 = TN  
-# correctly_predicted_1 = TP
+total_class_0 = TN + FN  
+total_class_1 = TP + FP  
+correctly_predicted_0 = TN  
+correctly_predicted_1 = TP
 
-# test_acc = test_acc *100
-# weighted_precision = weighted_precision * 100
-# weighted_recall   = weighted_recall * 100
-# weighted_f1_score = weighted_f1_score * 100
+test_acc = test_acc *100
+weighted_precision = weighted_precision * 100
+weighted_recall   = weighted_recall * 100
+weighted_f1_score = weighted_f1_score * 100
 
-# accuracy_0 = (TN / total_class_0) * 100
-# accuracy_1 = (TP / total_class_1) * 100
+accuracy_0 = (TN / total_class_0) * 100
+accuracy_1 = (TP / total_class_1) * 100
 
 
-# model_name = "Siamese"
-# feature_name = "Absolute Difference Map"
-# technique = "Ensemble"
+model_name = "Siamese"
+feature_name = "Absolute Difference Map"
+technique = "Ensemble"
 
-# save_metric_details(model_name, technique, feature_name, test_acc, weighted_precision, weighted_recall, weighted_f1_score, test_loss, accuracy_0, accuracy_1, result_file_path)
-# print(f"Accuracy: {test_acc:.4f} | precision: {weighted_precision:.4f}, Recall={weighted_recall:.4f}, F1-score={weighted_f1_score:.4f}, Loss={test_loss:.4f}, N.G.A Accuracy={accuracy_0:.4f}, G.A Accuracy={accuracy_1:.4f}")
+save_metric_details(model_name, technique, feature_name, test_acc, weighted_precision, weighted_recall, weighted_f1_score, test_loss, accuracy_0, accuracy_1, result_file_path)
+print(f"Accuracy: {test_acc:.4f} | precision: {weighted_precision:.4f}, Recall={weighted_recall:.4f}, F1-score={weighted_f1_score:.4f}, Loss={test_loss:.4f}, N.G.A Accuracy={accuracy_0:.4f}, G.A Accuracy={accuracy_1:.4f}")
