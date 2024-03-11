@@ -235,15 +235,15 @@ train_labels = np.array(train_labels)
 
 ## With Class Weight
 
-# ng = 27442
-# ga = 3000
+ng = 27442
+ga = 3000
 
-# total = ng + ga
-# imbalance_ratio = ng / ga  
+total = ng + ga
+imbalance_ratio = ng / ga  
 
-# weight_for_0 = (1 / ng) * (total / 2.0)
-# weight_for_1 = (1 / ga) * (total / 2.0)
-# class_weight = {0: weight_for_0, 1: weight_for_1}
+weight_for_0 = (1 / ng) * (total / 2.0)
+weight_for_1 = (1 / ga) * (total / 2.0)
+class_weight = {0: weight_for_0, 1: weight_for_1}
 
 # print('Weight for class 0 (Non-ghosting): {:.2f}'.format(weight_for_0))
 # print('Weight for class 1 (Ghosting): {:.2f}'.format(weight_for_1))
