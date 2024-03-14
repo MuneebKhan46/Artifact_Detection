@@ -214,18 +214,21 @@ def create_dnn_model(input_shape=(224,224, 1)):
         Flatten(input_shape=input_shape),
         Dense(512, activation='elu'),
         Dense(512, activation='elu',  kernel_regularizer=l1(0.001)),
+        Dropout(0.5), 
         
         Dense(256, activation='elu',  kernel_regularizer=l1(0.001)),
         Dense(256, activation='elu',  kernel_regularizer=l1(0.001)),
-#         Dense(256, activation='elu',  kernel_regularizer=l1(0.001)),
-        model.add(Dropout(0.5)),
+        Dense(256, activation='elu',  kernel_regularizer=l1(0.001)),
+        Dropout(0.5), 
+        
         Dense(128, activation='elu',  kernel_regularizer=l1(0.001)),
         Dense(128, activation='elu',  kernel_regularizer=l1(0.001)),
-#         Dense(128, activation='elu',  kernel_regularizer=l1(0.001)),             
+        Dense(128, activation='elu',  kernel_regularizer=l1(0.001)),             
+        Dropout(0.5), 
         
         Dense(64, activation='elu',  kernel_regularizer=l1(0.001)),
         Dense(64, activation='elu',  kernel_regularizer=l1(0.001)),
-        
+        Dropout(0.5), 
         Dense(32, activation='elu',  kernel_regularizer=l1(0.001)),
         Dense(32, activation='elu',  kernel_regularizer=l1(0.001)),
         
