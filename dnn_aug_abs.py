@@ -457,8 +457,9 @@ print(len(cb_train_dataset))
 print(len(cb_test_dataset))
 
 
-cb_train_patches, cb_train_labels, cb_train_img_names, cb_train_patch_numbers = zip(*cb_train_dataset)
-cb_test_patches, cb_test_labels, cb_test_img_names, cb_test_patch_numbers = zip(*cb_test_dataset)
+cb_train_patches, cb_train_labels = zip(*cb_train_dataset)
+cb_test_patches, cb_test_labels  = zip(*cb_test_dataset)
+
 cb_train_patches = np.array(cb_train_patches)
 cb_train_labels = np.array(cb_train_labels)
 cb_test_patches = np.array(cb_test_patches)
