@@ -43,9 +43,9 @@ class_1_accuracies = []
 # In[3]:
 
 
-original_dir = '/Muneeb/Google Project (updated)/Dataset/dataset_patch_raw_ver3/dataset_patch_raw_ver3/original'
-denoised_dir = '/Muneeb/Google Project (updated)/Dataset/dataset_patch_raw_ver3/dataset_patch_raw_ver3/denoised'
-csv_path     = '/Muneeb/Google Project (updated)/Dataset/dataset_patch_raw_ver3/patch_label_median.csv'
+original_dir = '/Dataset/dataset_patch_raw_ver3/original'
+denoised_dir = '/Dataset/dataset_patch_raw_ver3/denoised'
+csv_path     = '/Dataset/patch_label_median.csv'
 
 result_file_path = "/Dataset/Results/Overall_results.csv"
 
