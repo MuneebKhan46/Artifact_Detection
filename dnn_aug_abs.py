@@ -272,7 +272,7 @@ print(y_test.shape)
 
 # Without Class Weight
 
-opt = Adam(learning_rate=0.0001)
+opt = Adam(learning_rate=0.00001)
 dnn_wcw_model = create_dnn_model()
 dnn_wcw_model.compile(optimizer=opt, loss='categorical_crossentropy', metrics=['accuracy'])
 
@@ -295,7 +295,7 @@ class_weight = {0: weight_for_0, 1: weight_for_1}
 print('Weight for class 0 (Non-ghosting): {:.2f}'.format(weight_for_0))
 print('Weight for class 1 (Ghosting): {:.2f}'.format(weight_for_1))
 
-opt = Adam(learning_rate=0.0001)
+opt = Adam(learning_rate=0.00001)
 dnn_cw_model = create_dnn_model()
 dnn_cw_model.compile(optimizer=opt, loss='categorical_crossentropy', metrics=['accuracy'])
 
@@ -351,7 +351,7 @@ cb_train_labels = keras.utils.to_categorical(cb_train_labels, 2)
 cb_test_labels = keras.utils.to_categorical(cb_test_labels, 2)
 
 
-opt = Adam(learning_rate=0.0001)
+opt = Adam(learning_rate=0.00001)
 dnn_cb_model = create_dnn_model()
 dnn_cb_model.compile(optimizer=opt, loss='categorical_crossentropy', metrics=['accuracy'])
 
