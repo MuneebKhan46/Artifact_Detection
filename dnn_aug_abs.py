@@ -14,12 +14,12 @@ from tensorflow.keras.models import Model
 from tensorflow.keras.utils import plot_model
 from keras.models import Sequential
 from keras.layers import Input, Conv2D, MaxPooling2D, Flatten, Dense, Dropout, BatchNormalization, concatenate
-from keras.callbacks import ModelCheckpoint, EarlyStopping
+from keras.callbacks import ModelCheckpoint
 from tensorflow.keras.preprocessing.image import ImageDataGenerator, img_to_array, array_to_img
 from sklearn.model_selection import train_test_split
 from sklearn.utils import shuffle as sklearn_shuffle
 from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay, classification_report, accuracy_score
-from tensorflow.keras.optimizers import Adam, SGD, RMSprop
+from tensorflow.keras.optimizers import Adam
 
 
 models = []
@@ -273,7 +273,7 @@ dnn_wcw_model = create_dnn_model()
 dnn_wcw_model.compile(optimizer=opt, loss='categorical_crossentropy', metrics=['accuracy'])
 
 
-wcw_model_checkpoint = ModelCheckpoint(filepath='/Dataset/Model/DNN_AbsDiff_wCW.h5', save_best_only=True, monitor='val_accuracy', mode='max', verbose=1 )
+wcw_model_checkpoint = keras.callbacks.ModelCheckpoint(filepath='/Dataset/Model/DNN_AbsDiff_wCW.h5', save_best_only=True, monitor='val_accuracy', mode='max', verbose=1 )
 wcw_history = dnn_wcw_model.fit(X_train, y_train, epochs=20, validation_data=(X_test, y_test), callbacks=[wcw_model_checkpoint])
 
 
