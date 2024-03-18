@@ -265,6 +265,10 @@ y_test = keras.utils.to_categorical(y_test, 2)
 print(len(X_train))
 print(len(X_test))
 
+print(X_train.shape)
+print(y_train.shape)
+print(X_test.shape)
+print(y_test.shape)
 
 # Without Class Weight
 
@@ -359,6 +363,8 @@ cb_history = dnn_cb_model.fit(cb_train_patches, cb_train_labels, epochs=20, clas
 # Testing
 
 test_patches = np.array(test_patches)
+test_patches = test_patches.reshape((-1, 224, 224, 1))  # Reshape to include the channel dimension
+
 test_labels = np.array(test_labels)
 test_labels = keras.utils.to_categorical(test_labels, 2)
 
